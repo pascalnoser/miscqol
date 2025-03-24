@@ -1,0 +1,4 @@
+Name: Navigate to current file
+Description: Navigate Files pane to active file
+Binding: navigate_to_active_file
+Interactive: false

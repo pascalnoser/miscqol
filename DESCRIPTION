@@ -1,0 +1,10 @@
+Package: miscqol
+Title: Miscellaneous quality of life Addins for RStudio
+Version: 0.0.0.9000
+Authors@R: 
+    person("Pascal", "Noser", , "noser.pascal95@gmail.com", role = c("aut", "cre"))
+Description: Various functions that make life a bit easier.
+License: MIT + file LICENSE
+Encoding: UTF-8
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.3.2
