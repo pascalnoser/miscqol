@@ -2,10 +2,11 @@
 % Please edit documentation in R/misc.R
 \name{navigate_to_active_file}
 \alias{navigate_to_active_file}
-\title{In Files pane, navigate to folder of file currently open in editor}
+\title{Navigate to directory of open file}
 \usage{
 navigate_to_active_file()
 }
 \description{
-In Files pane, navigate to folder of file currently open in editor
+Open the Files pane and navigate to the folder containing the file currently
+open in the editor.
 }
