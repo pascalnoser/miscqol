@@ -2,3 +2,8 @@ Name: Navigate to current file
 Description: Navigate Files pane to active file
 Binding: navigate_to_active_file
 Interactive: false
+
+Name: Wrap in Parens
+Description: Wraps the current selection in parentheses and moves cursor to start.
+Binding: wrap_in_parens
+Interactive: false

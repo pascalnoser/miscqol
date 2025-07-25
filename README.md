@@ -8,7 +8,7 @@ This package adds miscellaneous quality of life Addins to RStudio.
 
 ## Installation
 
-You can install the development version of miscqol from [GitHub](https://github.com/) with:
+You can install the miscqol from [GitHub](https://github.com/) with:
 
 ``` r
 # install.packages("pak")
@@ -16,5 +16,6 @@ pak::pak("pascalnoser/miscqol")
 ```
 
 ## Addins/Functions
-- **Navigate to current file:** Navigate the Files pane to folder containing the file currently opened in editor.
+- **Navigate to current file:** Open the Files pane and to folder containing the file currently opened in editor.
+- **Wrap in parentheses:** Wrap the selected text in parentheses and move the cursor to the front.
 
