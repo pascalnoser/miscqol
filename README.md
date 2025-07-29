@@ -16,6 +16,6 @@ pak::pak("pascalnoser/miscqol")
 ```
 
 ## Addins/Functions
-- **Navigate to current file:** Open the Files pane and to folder containing the file currently opened in editor.
+- **Navigate to current file:** Open the Files pane and navigate to folder containing the file currently opened in editor.
 - **Wrap in parentheses:** Wrap the selected text in parentheses and move the cursor to the front.
 
