@@ -7,3 +7,13 @@ Name: Wrap in Parens
 Description: Wraps the current selection in parentheses and moves cursor to start.
 Binding: wrap_in_parens
 Interactive: false
+
+Name: Wrap in if
+Description: Wrap the selected text in an if(...) block
+Binding: wrap_in_if
+Interactive: false
+
+Name: Wrap in for
+Description: Wrap the selected text in a for(...) loop
+Binding: wrap_in_for
+Interactive: false

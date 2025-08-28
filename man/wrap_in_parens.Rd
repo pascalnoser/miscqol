@@ -2,10 +2,11 @@
 % Please edit documentation in R/misc.R
 \name{wrap_in_parens}
 \alias{wrap_in_parens}
-\title{Wrap in parentheses}
+\title{Wrap selection in parentheses}
 \usage{
 wrap_in_parens()
 }
 \description{
-Wrap the selected text in parentheses and move the cursor to the front
+Wraps the currently selected text in parentheses and moves the cursor to the
+front.
 }

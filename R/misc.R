@@ -11,9 +11,10 @@ navigate_to_active_file <- function() {
   rstudioapi::executeCommand("activateFiles")
 }
 
-#' Wrap in parentheses
+#' Wrap selection in parentheses
 #'
-#' Wrap the selected text in parentheses and move the cursor to the front
+#' Wraps the currently selected text in parentheses and moves the cursor to the
+#' front.
 #'
 #' @export
 wrap_in_parens <- function() {
@@ -30,4 +31,50 @@ wrap_in_parens <- function() {
   new_range <- ctx$selection[[1]]$range
   new_range$end[[2]] <- new_range$start[[2]] + 1  # Move cursor just after "("
   rstudioapi::setCursorPosition(new_range$start)  # Cursor at start
+}
+
+#' Wrap selection in an if statement
+#'
+#' Wraps the currently selected text in an if(...) { ... } block.
+#'
+#' @export
+wrap_in_if <- function() {
+  ctx <- rstudioapi::getActiveDocumentContext()
+
+  if (length(ctx$selection) == 0) return(invisible())
+
+  sel <- ctx$selection[[1]]$text
+  if (identical(sel, "")) {
+    # no selection, do nothing
+    return(invisible())
+  }
+
+  # Build wrapped text
+  new_text <- sprintf("if (<condition>) {\n%s\n}", sel)
+
+  # Replace selection
+  rstudioapi::modifyRange(ctx$selection[[1]]$range, new_text, id = ctx$id)
+}
+
+#' Wrap selection in a for statement
+#'
+#' Wraps the currently selected text in a for (... in ...) { ... } block.
+#'
+#' @export
+wrap_in_for <- function() {
+  ctx <- rstudioapi::getActiveDocumentContext()
+
+  if (length(ctx$selection) == 0) return(invisible())
+
+  sel <- ctx$selection[[1]]$text
+  if (identical(sel, "")) {
+    # no selection, do nothing
+    return(invisible())
+  }
+
+  # Build wrapped text
+  new_text <- sprintf("for (<variable> in <vector>) {\n%s\n}", sel)
+
+  # Replace selection
+  rstudioapi::modifyRange(ctx$selection[[1]]$range, new_text, id = ctx$id)
 }
