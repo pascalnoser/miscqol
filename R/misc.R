@@ -40,41 +40,59 @@ wrap_in_parens <- function() {
 #' @export
 wrap_in_if <- function() {
   ctx <- rstudioapi::getActiveDocumentContext()
-
   if (length(ctx$selection) == 0) return(invisible())
 
   sel <- ctx$selection[[1]]$text
-  if (identical(sel, "")) {
-    # no selection, do nothing
-    return(invisible())
-  }
+  if (identical(sel, "")) return(invisible())
 
-  # Build wrapped text
-  new_text <- sprintf("if (<condition>) {\n%s\n}", sel)
+  # Build text
+  new_text <- sprintf("if () {\n\t%s\n}", sel)
 
   # Replace selection
   rstudioapi::modifyRange(ctx$selection[[1]]$range, new_text, id = ctx$id)
+
+  # Determine new cursor position
+  new_range <- ctx$selection[[1]]$range
+  start_row <- new_range$start["row"]
+  start_col <- new_range$start["column"]
+
+  # Cursor should land right after "if ("
+  cursor_position <- rstudioapi::document_position(
+    row = start_row,
+    column = start_col + 4  # "if (" is 4 chars
+  )
+
+  rstudioapi::setCursorPosition(cursor_position, id = ctx$id)
 }
 
 #' Wrap selection in a for statement
 #'
-#' Wraps the currently selected text in a for (... in ...) { ... } block.
+#' Wraps the currently selected text in a for (...) { ... } block.
 #'
 #' @export
 wrap_in_for <- function() {
   ctx <- rstudioapi::getActiveDocumentContext()
-
   if (length(ctx$selection) == 0) return(invisible())
 
   sel <- ctx$selection[[1]]$text
-  if (identical(sel, "")) {
-    # no selection, do nothing
-    return(invisible())
-  }
+  if (identical(sel, "")) return(invisible())
 
-  # Build wrapped text
-  new_text <- sprintf("for (<variable> in <vector>) {\n%s\n}", sel)
+  # Build text with placeholder "condition"
+  new_text <- sprintf("for () {\n\t%s\n}", sel)
 
   # Replace selection
   rstudioapi::modifyRange(ctx$selection[[1]]$range, new_text, id = ctx$id)
+
+  # Determine new cursor position
+  new_range <- ctx$selection[[1]]$range
+  start_row <- new_range$start["row"]
+  start_col <- new_range$start["column"]
+
+  # Cursor should land right after "for ("
+  cursor_position <- rstudioapi::document_position(
+    row = start_row,
+    column = start_col + 5  # "for (" is 5 chars
+  )
+
+  rstudioapi::setCursorPosition(cursor_position, id = ctx$id)
 }

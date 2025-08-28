@@ -7,5 +7,5 @@
 wrap_in_for()
 }
 \description{
-Wraps the currently selected text in a for (... in ...) { ... } block.
+Wraps the currently selected text in a for (...) { ... } block.
 }
