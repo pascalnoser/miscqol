@@ -51,18 +51,31 @@ wrap_in_if <- function() {
   # Replace selection
   rstudioapi::modifyRange(ctx$selection[[1]]$range, new_text, id = ctx$id)
 
-  # Determine new cursor position
+  # Range covering inserted block
   new_range <- ctx$selection[[1]]$range
-  start_row <- new_range$start["row"]
-  start_col <- new_range$start["column"]
-
-  # Cursor should land right after "if ("
-  cursor_position <- rstudioapi::document_position(
-    row = start_row,
-    column = start_col + 4  # "if (" is 4 chars
+  end_row <- new_range$end["row"]
+  inserted_range <- rstudioapi::document_range(
+    start = new_range$start,
+    end   = rstudioapi::document_position(end_row + 2, 999)
   )
 
-  rstudioapi::setCursorPosition(cursor_position, id = ctx$id)
+  # Reindent the block
+  rstudioapi::setSelectionRanges(inserted_range, id = ctx$id)
+  rstudioapi::executeCommand("reindent")
+
+  # Re-fetch document after reindent
+  ctx2 <- rstudioapi::getActiveDocumentContext()
+  first_line <- ctx2$contents[new_range$start["row"]]
+
+  # Find the "if (" and place cursor after it
+  col_if <- regexpr("if \\(", first_line)
+  if (col_if > 0) {
+    cursor_position <- rstudioapi::document_position(
+      row = new_range$start["row"],
+      column = col_if + attr(col_if, "match.length")
+    )
+    rstudioapi::setCursorPosition(cursor_position, id = ctx$id)
+  }
 }
 
 #' Wrap selection in a for statement
@@ -77,24 +90,37 @@ wrap_in_for <- function() {
   sel <- ctx$selection[[1]]$text
   if (identical(sel, "")) return(invisible())
 
-  # Build text with placeholder "condition"
+  # Build text
   new_text <- sprintf("for () {\n\t%s\n}", sel)
 
   # Replace selection
   rstudioapi::modifyRange(ctx$selection[[1]]$range, new_text, id = ctx$id)
 
-  # Determine new cursor position
+  # Range covering inserted block (2 lines more than selection)
   new_range <- ctx$selection[[1]]$range
-  start_row <- new_range$start["row"]
-  start_col <- new_range$start["column"]
-
-  # Cursor should land right after "for ("
-  cursor_position <- rstudioapi::document_position(
-    row = start_row,
-    column = start_col + 5  # "for (" is 5 chars
+  end_row <- new_range$end["row"]
+  inserted_range <- rstudioapi::document_range(
+    start = new_range$start,
+    end   = rstudioapi::document_position(end_row + 2, 999)
   )
 
-  rstudioapi::setCursorPosition(cursor_position, id = ctx$id)
+  # Reindent the block
+  rstudioapi::setSelectionRanges(inserted_range, id = ctx$id)
+  rstudioapi::executeCommand("reindent")
+
+  # Re-fetch document after reindent
+  ctx2 <- rstudioapi::getActiveDocumentContext()
+  first_line <- ctx2$contents[new_range$start["row"]]
+
+  # Find the "for (" and place cursor after it
+  col_for <- regexpr("for \\(", first_line)
+  if (col_for > 0) {
+    cursor_position <- rstudioapi::document_position(
+      row = new_range$start["row"],
+      column = col_for + attr(col_for, "match.length")
+    )
+    rstudioapi::setCursorPosition(cursor_position, id = ctx$id)
+  }
 }
 
 #' Assign the loop variable to the first value in its sequence
