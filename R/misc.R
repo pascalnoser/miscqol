@@ -96,3 +96,45 @@ wrap_in_for <- function() {
 
   rstudioapi::setCursorPosition(cursor_position, id = ctx$id)
 }
+
+#' Assign the loop variable to the first value in its sequence
+#'
+#' If the current line begins with a `for` loop (e.g. `for (var in expr)`), it
+#' extracts the loop variable and the loop expression, then assigns the variable
+#' to the first element of the expression in the current R session.
+#'
+#' #' @details
+#' The function only looks at the single line where the cursor is positioned.
+#' Multi-line loop headers are not supported. It recognizes variable names
+#' consisting of letters, digits, underscores, or dots. Trailing comments (`#
+#' ...`) and optional braces after the `for` statement are tolerated.
+#'
+#' Supported loop forms include (with or without trailing `{` or comments):
+#' \itemize{
+#'   \item `for (i in 1:10)`
+#'   \item `for(i in seq_along(x)){`
+#'   \item `for (element_name in names(ls_elements))`
+#'   \item `for(value in myfun(x, y)) # with trailing comment`
+#' }
+#'
+#' @export
+assign_first_loop_value <- function() {
+  ctx  <- rstudioapi::getActiveDocumentContext()
+  row  <- ctx$selection[[1]]$range$start[1]
+  line <- ctx$contents[[row]]
+
+  # Robust pattern
+  pat <- "^\\s*for\\s*\\(\\s*([[:alnum:]_.]+)\\s+in\\s+(.+)\\)\\s*\\{?\\s*(?:#.*)?$"
+
+  m  <- regexec(pat, line, perl = TRUE)
+  mm <- regmatches(line, m)[[1]]
+
+  if (length(mm) >= 3) {
+    var <- mm[2]              # loop variable
+    seq <- trimws(mm[3])      # loop expression
+    cmd <- sprintf("%s <- (%s)[1]", var, seq)
+    rstudioapi::sendToConsole(cmd, execute = TRUE)
+  } else {
+    message("No for loop detected on this line.")
+  }
+}

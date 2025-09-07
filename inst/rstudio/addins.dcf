@@ -17,3 +17,8 @@ Name: Wrap in for
 Description: Wrap the selected text in a for(...) loop
 Binding: wrap_in_for
 Interactive: false
+
+Name: Assign loop variable
+Description: Assign the loop variable on the current line to its first value
+Binding: assign_first_loop_value
+Interactive: false

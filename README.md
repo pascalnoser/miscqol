@@ -20,4 +20,5 @@ pak::pak("pascalnoser/miscqol")
 - **Wrap in parentheses:** Wrap the selected text in parentheses and move the cursor to the front.
 - **Wrap in if:** Wrap the selected text in an if statement.
 - **Wrap in for:** Wrap the selected text in a for loop.
+- **Assign loop variable:** Assign the loop variable in the current line to its value in the first iteration of the for loop.
 
