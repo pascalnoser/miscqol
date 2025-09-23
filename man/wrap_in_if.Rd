@@ -7,5 +7,7 @@
 wrap_in_if()
 }
 \description{
-Wraps the currently selected text in an if(...) { ... } block.
+Wraps the current line in an \verb{if (...) \{ <text> \}} block and places the
+cursor inside the \verb{if ()} parentheses. If text is selected, wraps all lines
+that are at least partially included in the selection.
 }

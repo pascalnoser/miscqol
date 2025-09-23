@@ -12,10 +12,10 @@ extracts the loop variable and the loop expression, then assigns the variable
 to the first element of the expression in the current R session.
 }
 \details{
-#' @details
-The function only looks at the single line where the cursor is positioned.
-Multi-line loop headers are not supported. It recognizes variable names
-consisting of letters, digits, underscores, or dots. Trailing comments (\verb{# ...}) and optional braces after the \code{for} statement are tolerated.
+#' @details The function only looks at the single line where the cursor is
+positioned. Multi-line loop headers are not supported. It recognizes variable
+names consisting of letters, digits, underscores, or dots. Trailing comments
+(\verb{# ...}) and optional braces after the \code{for} statement are tolerated.
 
 Supported loop forms include (with or without trailing \verb{\{} or comments):
 \itemize{

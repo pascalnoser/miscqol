@@ -35,88 +35,114 @@ wrap_in_parens <- function() {
 
 #' Wrap selection in an if statement
 #'
-#' Wraps the currently selected text in an if(...) { ... } block.
+#' Wraps the current line in an `if (...) { <text> }` block and places the
+#' cursor inside the `if ()` parentheses. If text is selected, wraps all lines
+#' that are at least partially included in the selection.
 #'
 #' @export
 wrap_in_if <- function() {
   ctx <- rstudioapi::getActiveDocumentContext()
   if (length(ctx$selection) == 0) return(invisible())
 
-  sel <- ctx$selection[[1]]$text
-  if (identical(sel, "")) return(invisible())
+  sel <- ctx$selection[[1]]
+  sel_range <- sel$range
 
-  # Build text
-  new_text <- sprintf("if () {\n\t%s\n}", sel)
+  # Expand range to whole lines if selection is empty or partial
+  if (identical(sel$text, "")) {
+    # No selection: wrap current line
+    start_row <- sel_range$start["row"]
+    end_row <- start_row
+  } else {
+    # Expand to full lines covering the selection
+    start_row <- sel_range$start["row"]
+    end_row <- sel_range$end["row"]
+  }
 
-  # Replace selection
-  rstudioapi::modifyRange(ctx$selection[[1]]$range, new_text, id = ctx$id)
+  # Grab all lines to be wrapped
+  lines <- ctx$contents[start_row:end_row]
+  text_block <- paste(lines, collapse = "\n")
 
-  # Range covering inserted block
-  new_range <- ctx$selection[[1]]$range
-  end_row <- new_range$end["row"]
-  inserted_range <- rstudioapi::document_range(
-    start = new_range$start,
-    end   = rstudioapi::document_position(end_row + 2, 999)
+  # Build wrapped text
+  new_text <- sprintf("if () {\n\t%s\n}", text_block)
+
+  # Replace full line range
+  line_range <- rstudioapi::document_range(
+    start = rstudioapi::document_position(start_row, 1),
+    end   = rstudioapi::document_position(end_row, nchar(lines[length(lines)]) + 1)
   )
+  rstudioapi::modifyRange(line_range, new_text, id = ctx$id)
 
   # Reindent the block
-  rstudioapi::setSelectionRanges(inserted_range, id = ctx$id)
+  rstudioapi::setSelectionRanges(line_range, id = ctx$id)
   rstudioapi::executeCommand("reindent")
 
   # Re-fetch document after reindent
   ctx2 <- rstudioapi::getActiveDocumentContext()
-  first_line <- ctx2$contents[new_range$start["row"]]
+  first_line <- ctx2$contents[start_row]
 
-  # Find the "if (" and place cursor after it
+  # Place cursor inside the if parentheses
   col_if <- regexpr("if \\(", first_line)
   if (col_if > 0) {
     cursor_position <- rstudioapi::document_position(
-      row = new_range$start["row"],
+      row = start_row,
       column = col_if + attr(col_if, "match.length")
     )
     rstudioapi::setCursorPosition(cursor_position, id = ctx$id)
   }
 }
 
-#' Wrap selection in a for statement
+#' Wrap selection in a for loop
 #'
-#' Wraps the currently selected text in a for (...) { ... } block.
+#' Wraps the current line in a `for (...) { <text> }` block and places the
+#' cursor inside the `for ()` parentheses. If text is selected, wraps all lines
+#' that are at least partially included in the selection.
 #'
 #' @export
 wrap_in_for <- function() {
   ctx <- rstudioapi::getActiveDocumentContext()
   if (length(ctx$selection) == 0) return(invisible())
 
-  sel <- ctx$selection[[1]]$text
-  if (identical(sel, "")) return(invisible())
+  sel <- ctx$selection[[1]]
+  sel_range <- sel$range
 
-  # Build text
-  new_text <- sprintf("for () {\n\t%s\n}", sel)
+  # Expand range to whole lines if selection is empty or partial
+  if (identical(sel$text, "")) {
+    # No selection: wrap current line
+    start_row <- sel_range$start["row"]
+    end_row   <- start_row
+  } else {
+    # Expand to full lines covering the selection
+    start_row <- sel_range$start["row"]
+    end_row   <- sel_range$end["row"]
+  }
 
-  # Replace selection
-  rstudioapi::modifyRange(ctx$selection[[1]]$range, new_text, id = ctx$id)
+  # Grab all lines to be wrapped
+  lines <- ctx$contents[start_row:end_row]
+  text_block <- paste(lines, collapse = "\n")
 
-  # Range covering inserted block (2 lines more than selection)
-  new_range <- ctx$selection[[1]]$range
-  end_row <- new_range$end["row"]
-  inserted_range <- rstudioapi::document_range(
-    start = new_range$start,
-    end   = rstudioapi::document_position(end_row + 2, 999)
+  # Build wrapped text
+  new_text <- sprintf("for () {\n%s\n}", text_block)
+
+  # Replace full line range
+  line_range <- rstudioapi::document_range(
+    start = rstudioapi::document_position(start_row, 1),
+    end   = rstudioapi::document_position(end_row, nchar(lines[length(lines)]) + 1)
   )
+  rstudioapi::modifyRange(line_range, new_text, id = ctx$id)
 
   # Reindent the block
-  rstudioapi::setSelectionRanges(inserted_range, id = ctx$id)
+  rstudioapi::setSelectionRanges(line_range, id = ctx$id)
   rstudioapi::executeCommand("reindent")
 
   # Re-fetch document after reindent
   ctx2 <- rstudioapi::getActiveDocumentContext()
-  first_line <- ctx2$contents[new_range$start["row"]]
+  first_line <- ctx2$contents[start_row]
 
-  # Find the "for (" and place cursor after it
+  # Place cursor inside the for parentheses
   col_for <- regexpr("for \\(", first_line)
   if (col_for > 0) {
     cursor_position <- rstudioapi::document_position(
-      row = new_range$start["row"],
+      row = start_row,
       column = col_for + attr(col_for, "match.length")
     )
     rstudioapi::setCursorPosition(cursor_position, id = ctx$id)
@@ -129,11 +155,10 @@ wrap_in_for <- function() {
 #' extracts the loop variable and the loop expression, then assigns the variable
 #' to the first element of the expression in the current R session.
 #'
-#' #' @details
-#' The function only looks at the single line where the cursor is positioned.
-#' Multi-line loop headers are not supported. It recognizes variable names
-#' consisting of letters, digits, underscores, or dots. Trailing comments (`#
-#' ...`) and optional braces after the `for` statement are tolerated.
+#' #' @details The function only looks at the single line where the cursor is
+#' positioned. Multi-line loop headers are not supported. It recognizes variable
+#' names consisting of letters, digits, underscores, or dots. Trailing comments
+#' (`# ...`) and optional braces after the `for` statement are tolerated.
 #'
 #' Supported loop forms include (with or without trailing `{` or comments):
 #' \itemize{
@@ -147,19 +172,24 @@ wrap_in_for <- function() {
 assign_first_loop_value <- function() {
   ctx  <- rstudioapi::getActiveDocumentContext()
   row  <- ctx$selection[[1]]$range$start[1]
+  col  <- ctx$selection[[1]]$range$start[2]
   line <- ctx$contents[[row]]
 
   # Robust pattern
   pat <- "^\\s*for\\s*\\(\\s*([[:alnum:]_.]+)\\s+in\\s+(.+)\\)\\s*\\{?\\s*(?:#.*)?$"
-
   m  <- regexec(pat, line, perl = TRUE)
   mm <- regmatches(line, m)[[1]]
 
   if (length(mm) >= 3) {
-    var <- mm[2]              # loop variable
-    seq <- trimws(mm[3])      # loop expression
+    var <- mm[2]  # loop variable
+    seq <- trimws(mm[3])  # loop expression
     cmd <- sprintf("%s <- (%s)[1]", var, seq)
+
+    # Execute in console to explicitly see assignment
     rstudioapi::sendToConsole(cmd, execute = TRUE)
+
+    # Restore cursor location
+    rstudioapi::setCursorPosition(rstudioapi::document_position(row, col), id = ctx$id)
   } else {
     message("No for loop detected on this line.")
   }

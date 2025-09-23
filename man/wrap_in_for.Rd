@@ -2,10 +2,12 @@
 % Please edit documentation in R/misc.R
 \name{wrap_in_for}
 \alias{wrap_in_for}
-\title{Wrap selection in a for statement}
+\title{Wrap selection in a for loop}
 \usage{
 wrap_in_for()
 }
 \description{
-Wraps the currently selected text in a for (...) { ... } block.
+Wraps the current line in a \verb{for (...) \{ <text> \}} block and places the
+cursor inside the \verb{for ()} parentheses. If text is selected, wraps all lines
+that are at least partially included in the selection.
 }
