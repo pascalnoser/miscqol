@@ -1,6 +1,6 @@
 Package: miscqol
 Title: Miscellaneous quality of life Addins for RStudio
-Version: 0.1.4
+Version: 0.1.5
 Authors@R: 
     person("Pascal", "Noser", , "noser.pascal95@gmail.com", role = c("aut", "cre"))
 Description: Various functions that make life a bit easier.

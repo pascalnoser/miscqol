@@ -72,6 +72,9 @@ wrap_in_if <- function() {
   )
   rstudioapi::modifyRange(line_range, new_text, id = ctx$id)
 
+  # Adjust end row after adding if block
+  line_range$end[1] <- end_row + 2
+
   # Reindent the block
   rstudioapi::setSelectionRanges(line_range, id = ctx$id)
   rstudioapi::executeCommand("reindent")
@@ -129,6 +132,9 @@ wrap_in_for <- function() {
     end   = rstudioapi::document_position(end_row, nchar(lines[length(lines)]) + 1)
   )
   rstudioapi::modifyRange(line_range, new_text, id = ctx$id)
+
+  # Adjust end row after adding if block
+  line_range$end[1] <- end_row + 2
 
   # Reindent the block
   rstudioapi::setSelectionRanges(line_range, id = ctx$id)
