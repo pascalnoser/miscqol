@@ -194,7 +194,8 @@ assign_first_loop_value <- function() {
     # Execute in console to explicitly see assignment
     rstudioapi::sendToConsole(cmd, execute = TRUE)
 
-    # Restore cursor location
+    # Move focus back to source and restore cursor location
+    rstudioapi::executeCommand("activateSource")
     rstudioapi::setCursorPosition(rstudioapi::document_position(row, col), id = ctx$id)
   } else {
     message("No for loop detected on this line.")
