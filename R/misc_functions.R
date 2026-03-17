@@ -109,3 +109,59 @@ env_object_sizes <- function(
     ))
   }
 }
+
+#' Display the first few rows and columns of a data frame or matrix
+#'
+#' A convenient way to peek at tabular data, displaying only a subset of rows
+#' and columns. By default, it shows the first 5 rows and first 5 columns.
+#'
+#' @param x A data frame or matrix to display.
+#' @param nrow The number of rows to display. Defaults to 5.
+#' @param ncol The number of columns to display. Defaults to 5.
+#'
+#' @return Invisibly returns the subset of \code{x} with the first \code{nrow}
+#'   rows and first \code{ncol} columns. The object structure (data frame or
+#'   matrix) is preserved.
+#'
+#' @details
+#' If \code{x} has fewer than \code{nrow} rows or \code{ncol} columns, all
+#' available rows or columns are displayed without warning.
+#'
+#' @examples
+#' df <- data.frame(
+#'   a = 1:100,
+#'   b = letters[1:100],
+#'   c = rnorm(100),
+#'   d = sample(c(TRUE, FALSE), 100, replace = TRUE),
+#'   e = factor(rep(c("x", "y", "z"), length.out = 100))
+#' )
+#'
+#' # Display first 5 rows and columns
+#' peek(df)
+#'
+#' # Display first 10 rows and 3 columns
+#' peek(df, nrow = 10, ncol = 3)
+#'
+#' # Works with matrices too
+#' m <- matrix(1:100, nrow = 20)
+#' peek(m, nrow = 6, ncol = 4)
+#'
+#' @seealso \code{\link{head}}, \code{\link{tail}}
+#'
+#' @export
+peek <- function(x, nrow = 5, ncol = 5) {
+  if (!is.data.frame(x) && !is.matrix(x)) {
+    stop("'x' must be a data frame or matrix")
+  }
+
+  max_rows <- nrow(x)
+  max_cols <- ncol(x)
+
+  display_rows <- min(nrow, max_rows)
+  display_cols <- min(ncol, max_cols)
+
+  subset_x <- x[1:display_rows, 1:display_cols]
+  print(subset_x)
+
+  invisible(subset_x)
+}
