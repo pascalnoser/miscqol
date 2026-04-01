@@ -13,6 +13,8 @@
 #' @param numeric If \code{TRUE}, return a numeric vector instead of formatted
 #'   character output. When \code{units = "auto"}, numeric output is returned in
 #'   bytes.
+#' @param n An optional integer specifying the number of largest objects to
+#'   return. If \code{NULL} (default), all objects are returned.
 #'
 #' @return A named vector sorted in decreasing order of memory usage.
 #' \describe{
@@ -34,21 +36,25 @@
 #' y <- matrix(1, 1e4, 1e4)
 #'
 #' # Automatically choose best unit per object
-#' env_object_sizes()
+#' get_object_sizes()
 #'
 #' # Fixed units
-#' env_object_sizes(units = "MB")
+#' get_object_sizes(units = "MB")
 #'
 #' # Numeric output
-#' env_object_sizes(units = "GB", numeric = TRUE)
+#' get_object_sizes(units = "GB", numeric = TRUE)
+#'
+#' # Get top 5 largest objects
+#' get_object_sizes(n = 5)
 #'
 #' @seealso \code{\link{object.size}}, \code{\link{ls}}
 #'
 #' @export
-env_object_sizes <- function(
-    env = .GlobalEnv,
-    units = c("auto", "bytes", "KB", "MB", "GB"),
-    numeric = FALSE
+get_object_sizes <- function(
+  env = .GlobalEnv,
+  units = c("auto", "bytes", "KB", "MB", "GB"),
+  numeric = FALSE,
+  n = NULL
 ) {
   units <- match.arg(units)
 
@@ -66,8 +72,12 @@ env_object_sizes <- function(
   ord <- order(sizes_bytes, decreasing = TRUE)
   sizes_bytes <- sizes_bytes[ord]
 
-  if (units == "auto") {
+  # Limit to top n if specified
+  if (!is.null(n)) {
+    sizes_bytes <- sizes_bytes[seq_len(min(n, length(sizes_bytes)))]
+  }
 
+  if (units == "auto") {
     if (numeric) {
       # cannot return consistent units; return bytes
       return(sizes_bytes)
@@ -85,8 +95,10 @@ env_object_sizes <- function(
       }
     }
 
-    return(setNames(vapply(sizes_bytes, format_auto, character(1)),
-                    names(sizes_bytes)))
+    return(setNames(
+      vapply(sizes_bytes, format_auto, character(1)),
+      names(sizes_bytes)
+    ))
   }
 
   # fixed unit conversion

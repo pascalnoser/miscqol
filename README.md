@@ -23,5 +23,5 @@ pak::pak("pascalnoser/miscqol")
 - **Assign loop variable:** Assign the loop variable in the current line to its value in the first iteration of the for loop.
 
 ## Functions
-- **`env_object_sizes()`:** Get memory usage of all objects in environment in numeric or human readable format.
+- **`get_object_sizes()`:** Get memory usage of objects in environment in numeric or human readable format.
 - **`peek()`:** Display the first few rows and columns of a data frame or matrix.
